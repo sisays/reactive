@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id="submission" external.linked.project.path="$MODULE_DIR$/../../submission" external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../submission/target/scala-2.11/classes" />
-    <output-test url="file://$MODULE_DIR$/../../submission/target/scala-2.11/test-classes" />
+<module external.linked.project.id="nodescala-sources" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="SHARED_SOURCES_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../submission">
-      <sourceFolder url="file://$MODULE_DIR$/../../submission/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../submission/src/main/scala" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../submission/target/scala-2.11/src_managed/main" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../submission/target/scala-2.11/src_managed/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../submission/target/scala-2.11/resource_managed/main" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/../../submission/target/scala-2.11/resource_managed/test" type="java-test-resource" />
-      <excludeFolder url="file://$MODULE_DIR$/../../submission/target" />
+    <content url="file://$MODULE_DIR$/../..">
+      <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -60,6 +52,5 @@
     <orderEntry type="library" scope="TEST" name="SBT: org.scalatest:scalatest_2.11:2.2.4:jar" level="project" />
     <orderEntry type="library" name="SBT: org.slf4j:slf4j-api:1.7.5:jar" level="project" />
     <orderEntry type="library" name="SBT: org.slf4j:slf4j-simple:1.7.5:jar" level="project" />
-    <orderEntry type="module" module-name="nodescala-sources" exported="" />
   </component>
 </module>

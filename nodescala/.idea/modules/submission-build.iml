@@ -37,7 +37,6 @@
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.10.4/org.scala-sbt/sbt/0.13.7/classpath-0.13.7.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-js-envs_2.10/jars/scalajs-js-envs_2.10-0.6.2.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/com.github.scopt/scopt_2.10/jars/scopt_2.10-2.1.0.jar!/" />
-          <root url="file://$MODULE_DIR$/../../project/target/scala-2.10/sbt-0.13/classes" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.10.4/org.scala-sbt/sbt/0.13.7/collections-0.13.7.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/args4j/args4j/jars/args4j-2.0.16.jar!/" />
           <root url="jar://$USER_HOME$/.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />

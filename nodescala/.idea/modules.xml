@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/assignment.iml" filepath="$PROJECT_DIR$/.idea/modules/assignment.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/assignment-build.iml" filepath="$PROJECT_DIR$/.idea/modules/assignment-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nodescala-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/nodescala-sources.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/submission.iml" filepath="$PROJECT_DIR$/.idea/modules/submission.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/submission-build.iml" filepath="$PROJECT_DIR$/.idea/modules/submission-build.iml" />
     </modules>

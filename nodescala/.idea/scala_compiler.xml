@@ -3,5 +3,9 @@
   <component name="ScalaCompilerConfiguration">
     <option name="deprecationWarnings" value="true" />
     <option name="featureWarnings" value="true" />
+    <profile name="SBT 1" modules="assignment,submission">
+      <option name="deprecationWarnings" value="true" />
+      <option name="featureWarnings" value="true" />
+    </profile>
   </component>
 </project>
