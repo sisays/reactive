@@ -104,9 +104,13 @@ package object nodescala {
      *  However, it is also non-deterministic -- it may throw or return a value
      *  depending on the current state of the `Future`.
      */
-    def now: T = Try(Await.result(f, Duration.Zero)) match {
+    def now: T = {
+      if (!f.isCompleted) throw new NoSuchElementException("Future has not complete")
+
+      Try(Await.result(f, Duration.Zero)) match {
         case Success(v) => v
-        case Failure(e) => throw new NoSuchElementException()
+        case Failure(e) => throw new NoSuchElementException(e.getLocalizedMessage)
+      }
     }
 
     /** Continues the computation of this future by taking the current future
@@ -129,9 +133,18 @@ package object nodescala {
      */
     def continue[S](cont: Try[T] => S): Future[S] = {
       val p = Promise[S]()
+      f onComplete {
+        tryValue => p tryComplete Try(cont(tryValue))
+      }
+      p.future
+    }
+
+    def continueOld[S](cont: Try[T] => S): Future[S] = {
+      val p = Promise[S]()
       f onComplete cont
       p.future
     }
+
   }
 
   /** Subscription objects are used to be able to unsubscribe

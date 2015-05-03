@@ -85,6 +85,23 @@ class NodeScalaSuite extends FunSuite {
     }
   }
 
+  test("Future.continue should contain the continued value"){
+
+    val f1: Future[Int] = Future {
+      Await.result(Future.never[Int], 1 millis)
+    }
+    val fs: List[Future[Int]] = List(Future { 3 }, f1)
+
+    val f = Future.all(fs) continue {
+      t => "youpi " + t
+    }
+
+    f onComplete {
+      case Success(v) => v === List("youpi 3", "youpi ")
+      case Failure(ex) => println(ex)
+    }
+  }
+
   class DummyExchange(val request: Request) extends Exchange {
     @volatile var response = ""
     val loaded = Promise[String]()
@@ -164,6 +181,30 @@ class NodeScalaSuite extends FunSuite {
     test(immutable.Map("WorksForThree" -> List("Always works. Trust me.")))
 
     dummySubscription.unsubscribe()
+  }
+
+  test("Server should be stoppable if receives infinite  response") {
+    val dummy = new DummyServer(8191)
+    val dummySubscription = dummy.start("/testDir") {
+      request => Iterator.continually("a")
+    }
+
+    // wait until server is really installed
+    Thread.sleep(500)
+
+    val webpage = dummy.emit("/testDir", Map("Any" -> List("thing")))
+    try {
+      // let's wait some time
+      Await.result(webpage.loaded.future, 1 second)
+      fail("infinite response ended")
+    } catch {
+      case e: TimeoutException => println(e.getLocalizedMessage)
+    }
+
+    // stop everything
+    dummySubscription.unsubscribe()
+    Thread.sleep(500)
+    webpage.loaded.future.now // should not get NoSuchElementException
   }
 
 }

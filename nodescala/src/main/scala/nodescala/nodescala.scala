@@ -1,5 +1,8 @@
 package nodescala
 
+import akka.actor.Status.Success
+
+import scala.language.postfixOps
 import com.sun.net.httpserver._
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -32,11 +35,10 @@ trait NodeScala {
    *  @param response     the response to write back
    */
   private def respond(exchange: Exchange, token: CancellationToken, response: Response): Unit = {
-    response.foreach (e => {
-      if (token.nonCancelled) {
-        exchange.write(e)
-      }
-    })
+    while(token.nonCancelled && response.hasNext){
+      val e = response.next()
+      exchange.write(e)
+    }
     exchange.close()
   }
 
@@ -70,15 +72,27 @@ trait NodeScala {
           val (req, xch) = Await.result(requestFuture, Duration.Inf)
 
           //responds to it asynchronously using respond and keeps repeating this until the computation is cancelled.
-          val respSubscription = Future.run() { ct2 =>
-            Future {
-              respond(xch, ct2, handler(req))
+          val respSubscription = Future.run() {
+            ct2 => {
+              Future {
+                respond(xch, ct2, handler(req))
+              }
+//              val call = Future[Int] {
+//                respond(xch, ct2, handler(req))
+//                1
+//              }
+//              val timeOutCheck = Future[Int] {
+//                Thread.sleep(5000)
+//                2
+//              }
+//              val breaker = Future.any(List(call, timeOutCheck))
+//              breaker onSuccess ( t => if (t == 2) aggregateSubscription.unsubscribe())
+//              call
             }
           }
-
           aggregateSubscription = Subscription(aggregateSubscription, respSubscription)
         }
-        aggregateSubscription.unsubscribe()
+        listenerSubscription.unsubscribe()
       }
     }
     Subscription(listenerSubscription, serverSubscription)
