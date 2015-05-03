@@ -34,22 +34,15 @@ package object nodescala {
      *  The values in the list are in the same order as corresponding futures `fs`.
      *  If any of the futures `fs` fails, the resulting future also fails.
      */
-    def all[T](fs: List[Future[T]]): Future[List[T]] = Future {
-      var l = List.empty[T]
-
-//      l = for {
-//        e <- fs
-//        f <- e onComplete { _ }
-//      } yield f::l
-
-      fs foreach {
-        _ onComplete {
-          case tryValue => {
-            tryValue :: l
-          }
-        }
+    def all[T](fs: List[Future[T]]): Future[List[T]] = {
+      val p = Promise[List[T]]()
+      p success List()
+      fs.foldRight(p.future) {
+        (f, acc) => for {
+          x <- f
+          xs <- acc
+        } yield x :: xs
       }
-      l
     }
 
     /** Given a list of futures `fs`, returns the future holding the value of the future from `fs` that completed first.
@@ -76,13 +69,6 @@ package object nodescala {
      */
     def delay(t: Duration): Future[Unit] = Future {
       Try(Await.ready(Promise().future, t))
-    }
-
-    /** Returns a future with a unit value that is completed after time `t`.
-      */
-    def delay(t: Duration, b: () => Unit): Future[Unit] = Future {
-      delay(t)
-      b()
     }
 
     /** Completes this future with user input.

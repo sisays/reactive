@@ -45,16 +45,16 @@ class NodeScalaSuite extends FunSuite {
   test("A delayed future should complete at its duration") {
     val delayed2 = Future.delay(200 millis)
     try {
-      Await.result(delayed2, 205 millis)
+      Await.result(delayed2, 210 millis)
     } catch {
       case t: TimeoutException => assert(false)
     }
   }
 
   test("Any future will return the first to complete") {
-    val delayed1 = Future.delay(200 millis, () => 1)
-    val delayed2 = Future.delay(100 millis, () => 2)
-    val delayed3 = Future.delay(300 millis, () => 3)
+    val delayed1 = Future.delay(300 millis) continueWith ( f => 1 )
+    val delayed2 = Future.delay(100 millis) continueWith ( f => 2 )
+    val delayed3 = Future.delay(700 millis) continueWith ( f => 3 )
     val test = Future.any(List(delayed1, delayed2, delayed3))
     test onComplete {
       case Success(v) => assert(v == 2)
@@ -63,20 +63,25 @@ class NodeScalaSuite extends FunSuite {
   }
 
   test("all futures will return once the last has complete") {
-    val delayed1 = Future.delay(200 millis, () => 1)
-    val delayed2 = Future.delay(100 millis, () => 2)
-    val delayed3 = Future.delay(300 millis, () => 3)
+    val delayed1 = Future.delay(200 millis) continueWith ( f => 1 )
+    val delayed2 = Future.delay(100 millis) continueWith ( f => 2 )
+    val delayed3 = Future.delay(300 millis) continueWith ( f => 3 )
     val test = Future.all(List(delayed1, delayed2, delayed3))
-
-    test onComplete {
-      case Success(v) => assert(v contains(1, 2, 3))
-      case Failure(ex) => assert(false)
-    }
 
     try {
       Await.result(test, 305 millis)
     } catch {
       case t: TimeoutException => assert(false)
+    }
+  }
+
+  test("A Future.all should be completed with all the results of successful futures List(1, 2, 3).map(x => Future { x })"){
+
+    val test = List(1, 2, 3).map(x => Future { x })
+
+    Future.all(test) onComplete {
+      case Success(v) => assert(v === List(1, 2, 3))
+      case Failure(ex) => assert(false)
     }
   }
 
