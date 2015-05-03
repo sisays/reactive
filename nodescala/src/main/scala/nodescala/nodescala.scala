@@ -62,35 +62,10 @@ trait NodeScala {
 
     val serverSubscription = Future.run() { ct =>
       Future {
-
-        var aggregateSubscription = listenerSubscription
-
-        //if the computation is not cancelled..
         while (ct.nonCancelled) {
-          //awaits the nextRequest from the listener
           val requestFuture: Future[(Request, Exchange)] = listener.nextRequest()
           val (req, xch) = Await.result(requestFuture, Duration.Inf)
-
-          //responds to it asynchronously using respond and keeps repeating this until the computation is cancelled.
-          val respSubscription = Future.run() {
-            ct2 => {
-              Future {
-                respond(xch, ct2, handler(req))
-              }
-//              val call = Future[Int] {
-//                respond(xch, ct2, handler(req))
-//                1
-//              }
-//              val timeOutCheck = Future[Int] {
-//                Thread.sleep(5000)
-//                2
-//              }
-//              val breaker = Future.any(List(call, timeOutCheck))
-//              breaker onSuccess ( t => if (t == 2) aggregateSubscription.unsubscribe())
-//              call
-            }
-          }
-          aggregateSubscription = Subscription(aggregateSubscription, respSubscription)
+          Future { respond(xch, ct, handler(req)) }
         }
         listenerSubscription.unsubscribe()
       }
