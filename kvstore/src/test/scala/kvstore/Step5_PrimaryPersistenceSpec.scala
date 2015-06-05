@@ -81,11 +81,27 @@ class Step5_PrimaryPersistenceSpec extends TestKit(ActorSystem("Step5PrimaryPers
     client.waitFailed(setId)
   }
 
-  test("case4: Primary generates failure after 1 second if global acknowledgement fails") {
+  test("case4a: Primary sends Replicate to the new-comers replica") {
     val arbiter = TestProbe()
     val persistence = TestProbe()
-        val primary = system.actorOf(Replica.props(arbiter.ref, Persistence.props(flaky = false)), "case4-primary")
-        val secondary = TestProbe()
+    val primary = system.actorOf(Replica.props(arbiter.ref, Persistence.props(flaky = false)), "case4a-primary")
+    val secondary = TestProbe()
+    val client = session(primary)
+
+    arbiter.expectMsg(Join)
+    arbiter.send(primary, JoinedPrimary)
+    client.setAcked("k1", "v1")
+    client.getAndVerify("k1")
+    arbiter.send(primary, Replicas(Set(primary, secondary.ref)))
+
+    secondary.expectMsgType[Snapshot](200.millis)
+  }
+
+  test("case4b: Primary generates failure after 1 second if global acknowledgement fails") {
+    val arbiter = TestProbe()
+    val persistence = TestProbe()
+    val primary = system.actorOf(Replica.props(arbiter.ref, Persistence.props(flaky = false)), "case4b-primary")
+    val secondary = TestProbe()
     val client = session(primary)
 
     arbiter.expectMsg(Join)
@@ -94,7 +110,6 @@ class Step5_PrimaryPersistenceSpec extends TestKit(ActorSystem("Step5PrimaryPers
 
     client.probe.within(1.second, 2.seconds) {
       val setId = client.set("foo", "bar")
-      secondary.expectMsgType[Snapshot](200.millis)
       client.waitFailed(setId)
     }
   }
